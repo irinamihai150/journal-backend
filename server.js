@@ -1,13 +1,12 @@
-import dotenv from "dotenv"
 dotenv.config()
-import User from "./models/userModel.js"
 import connectDB from "./config/db.js"
+import dotenv from "dotenv"
+import User from "./models/userModel.js"
 import express from "express"
 import cors from "cors"
 import mongoose from "mongoose"
 import bcrypt from "bcrypt"
 
-const dbConnectionString = process.env.DB_CONNECTION_STRING
 connectDB() //connect to the database
 
 const app = express()
@@ -51,8 +50,8 @@ app.post("/register", async (req, res) => {
 
 		// Create a new User instance with the hashed password
 		const newUser = new User({
-			name: "John",
-			password: hash,
+			name:user,
+			password:hash,
 		})
 
 		// Save the user to the database
@@ -67,6 +66,14 @@ app.post("/register", async (req, res) => {
 	}
 })
 
+app.post("./auth", (req, res) => {
+	const { user, pwd } = req.body
+	if (user === "user" && pwd === "pwd") {
+		res.status(200).json({ message: "Authentication successful" })
+	} else {
+		res.status(403).json({ message: "Authentication failed" })
+	}
+})
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}`)
 })
