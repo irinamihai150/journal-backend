@@ -6,6 +6,9 @@ import express from "express"
 import cors from "cors"
 import mongoose from "mongoose"
 import bcrypt from "bcrypt"
+import notes from "./data/notes.js"
+import Note from "./models/noteModels.js"
+import { notFound,errorHandler } from "./middleware/errorMiddleware.js"
 
 connectDB() //connect to the database
 
@@ -29,6 +32,27 @@ app.get("/", (req, res) => {
 	res.send("Hello, Express Server!")
 })
 
+app.get("/notes", async (req, res) => {
+	try {
+		const notes = await Note.find()
+		res.json(notes)
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ error: "Internal Server Error" })
+	}
+})
+app.get("/notes/:id", async (req, res) => {
+	try {
+		const note = await Note.findById(req.params.id)
+		if (!note) {
+			res.status(404).json({ error: "Note not found" })
+		}
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ error: "Internal Server Error" })
+	}
+})
+
 app.post("/register", async (req, res) => {
 	// Use async function
 	console.log("Received request body:", req.body)
@@ -50,8 +74,8 @@ app.post("/register", async (req, res) => {
 
 		// Create a new User instance with the hashed password
 		const newUser = new User({
-			name:user,
-			password:hash,
+			name: user,
+			password: hash,
 		})
 
 		// Save the user to the database
@@ -74,6 +98,8 @@ app.post("./auth", (req, res) => {
 		res.status(403).json({ message: "Authentication failed" })
 	}
 })
+app.use(notFound)
+app.use(errorHandler)
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}`)
 })
