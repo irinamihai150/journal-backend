@@ -1,5 +1,5 @@
-import asyncHandler from "../middleware/asyncHandler"
-import User from "../models/userModel"
+import asyncHandler from "../middleware/asyncHandler.js"
+import User from "../models/userModel.js"
 //auth user & get token
 //GET/ users
 const authUser = asyncHandler(async (req, res) => {
@@ -24,4 +24,4 @@ const getUserProfile = asyncHandler(async (req, res) => {
 const updateUserProfile = asyncHandler(async (req, res) => {
 	res.send("update user profile")
 })
-export { authUser, registerUser, logoutUser, getUserProfile, updateUserProfile}
+export { authUser, registerUser, logoutUser, getUserProfile, updateUserProfile }

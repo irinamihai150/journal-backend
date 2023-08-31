@@ -10,8 +10,8 @@ import bcrypt from "bcrypt"
 import notes from "./data/notes.js"
 import Note from "./models/noteModels.js"
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js"
-// import noteRoutes from "./routes/noteRoutes.js"
-// import userRoutes from "./routes/userRoutes.js"
+import noteRoutes from "./routes/noteRoutes.js"
+import userRoutes from "./routes/userRoutes.js"
 dotenv.config()
 connectDB() //connect to the database
 const app = express()
@@ -63,6 +63,7 @@ const hashPassword = async (plainPwd) => {
 		return hash
 	} catch (err) {
 		console.log(err)
+		throw new Error("Password hashing failed")
 	}
 }
 
@@ -108,8 +109,8 @@ app.post("/auth", (req, res) => {
 		res.status(403).json({ message: "Authentication failed" })
 	}
 })
-// app.use("/notes", notesRoutes)
-// app.use("/users", userRoutes)
+app.use("/notes", noteRoutes)
+app.use("/users", userRoutes)
 app.use(notFound)
 app.use(errorHandler)
 app.listen(PORT, () => {
