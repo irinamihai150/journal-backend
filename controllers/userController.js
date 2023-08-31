@@ -3,7 +3,18 @@ import User from "../models/userModel.js"
 //auth user & get token
 //GET/ users
 const authUser = asyncHandler(async (req, res) => {
-	res.send("auth user")
+	const { name, password } = req.body
+	const user = await User.findOne({ name })
+	if (!user) {
+		res.status(401).json({ message: "Authentication failed" })
+		return
+	}
+	const isPasswordValid = await bcrypt.compare(password, user.password)
+	if (isPasswordValid) {
+		res.status(200).json({ message: "Authentication successful" })
+	}else {
+		res.status(401).json({ message: "Authentication failed" })
+	}
 })
 //register user
 //POST/users
