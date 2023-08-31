@@ -4,7 +4,7 @@ import Note from "../models/noteModels.js"
 //desc fetch all notes
 //route /get/notes
 const getNotes = asyncHandler(async(req,res)=> {
-const notes = await notes.find({
+const notes = await Note.find({
 
 })
 res.json(notes)

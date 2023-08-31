@@ -1,4 +1,5 @@
 dotenv.config()
+connectDB() //connect to the database
 import connectDB from "./config/db.js"
 import dotenv from "dotenv"
 import User from "./models/userModel.js"
@@ -8,10 +9,11 @@ import mongoose from "mongoose"
 import bcrypt from "bcrypt"
 import notes from "./data/notes.js"
 import Note from "./models/noteModels.js"
-import { notFound,errorHandler } from "./middleware/errorMiddleware.js"
-
+import { notFound, errorHandler } from "./middleware/errorMiddleware.js"
+// import noteRoutes from "./routes/noteRoutes.js"
+// import userRoutes from "./routes/userRoutes.js"
+dotenv.config()
 connectDB() //connect to the database
-
 const app = express()
 app.use(express.json())
 
@@ -46,12 +48,23 @@ app.get("/notes/:id", async (req, res) => {
 		const note = await Note.findById(req.params.id)
 		if (!note) {
 			res.status(404).json({ error: "Note not found" })
+		} else {
+			res.json(note)
 		}
 	} catch (error) {
 		console.log(error)
 		res.status(500).json({ error: "Internal Server Error" })
 	}
 })
+const hashPassword = async (plainPwd) => {
+	const saltRounds = 10
+	try {
+		const hash = await bcrypt.hash(plainPwd, saltRounds)
+		return hash
+	} catch (err) {
+		console.log(err)
+	}
+}
 
 app.post("/register", async (req, res) => {
 	// Use async function
@@ -66,20 +79,17 @@ app.post("/register", async (req, res) => {
 			return
 		}
 
-		const plainPwd = "mySecurePassword123"
-		const saltRounds = 10
-
 		// Hash the plain password
-		const hash = await bcrypt.hash(plainPwd, saltRounds) // Use await here
+		const hashedPasswords = await hashPassword(pwd) // Use await here
 
 		// Create a new User instance with the hashed password
 		const newUser = new User({
 			name: user,
-			password: hash,
+			password: hashedPasswords,
 		})
 
 		// Save the user to the database
-		await newUser.save({ timeoutMs: 30000 }) // Use await here
+		await newUser.save()
 
 		console.log("User saved successfully")
 		// Respond to the client that the user is registered
@@ -90,7 +100,7 @@ app.post("/register", async (req, res) => {
 	}
 })
 
-app.post("./auth", (req, res) => {
+app.post("/auth", (req, res) => {
 	const { user, pwd } = req.body
 	if (user === "user" && pwd === "pwd") {
 		res.status(200).json({ message: "Authentication successful" })
@@ -98,6 +108,8 @@ app.post("./auth", (req, res) => {
 		res.status(403).json({ message: "Authentication failed" })
 	}
 })
+// app.use("/notes", notesRoutes)
+// app.use("/users", userRoutes)
 app.use(notFound)
 app.use(errorHandler)
 app.listen(PORT, () => {

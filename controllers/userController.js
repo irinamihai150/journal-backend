@@ -1,15 +1,27 @@
+import asyncHandler from "../middleware/asyncHandler"
 import User from "../models/userModel"
-
-const authUser = async (req, res) => {
+//auth user & get token
+//GET/ users
+const authUser = asyncHandler(async (req, res) => {
 	res.send("auth user")
-}
-
-const registerUser = async (req, res) => {
+})
+//register user
+//POST/users
+const registerUser = asyncHandler(async (req, res) => {
 	res.send("user registered")
-}
-
-
-const logoutUser = async (req, res) => {
+})
+//logoutuse /clear cookie
+//POST /users/logout
+const logoutUser = asyncHandler(async (req, res) => {
 	res.send("logout user")
-}
-export {authUser, registerUser, logoutUser}
+})
+//get user profile
+// GET users/profile/
+const getUserProfile = asyncHandler(async (req, res) => {
+	res.send(" get user profile")
+})
+
+const updateUserProfile = asyncHandler(async (req, res) => {
+	res.send("update user profile")
+})
+export { authUser, registerUser, logoutUser, getUserProfile, updateUserProfile}
