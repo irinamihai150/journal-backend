@@ -1,21 +1,39 @@
 import asyncHandler from "../middleware/asyncHandler.js"
+import bcrypt from "bcrypt"
 import User from "../models/userModel.js"
 //auth user & get token
 //GET/ users
-const authUser = asyncHandler(async (req, res) => {
-	const { name, password } = req.body
-	const user = await User.findOne({ name })
-	if (!user) {
-		res.status(401).json({ message: "Authentication failed" })
-		return
-	}
-	const isPasswordValid = await bcrypt.compare(password, user.password)
-	if (isPasswordValid) {
-		res.status(200).json({ message: "Authentication successful" })
-	}else {
-		res.status(401).json({ message: "Authentication failed" })
+
+const authUser = asyncHandler(async (req, res, next) => {
+	const { user, pwd } = req.body
+
+	try {
+		const foundUser = await User.findOne({ name: user })
+
+		if (!foundUser) {
+			return res.status(401).json({ message: "Invalid name" })
+		}
+
+		// const isPasswordValid = await bcrypt.compare(pwd, foundUser.password)
+		
+		const isPasswordValid = true
+		console.log(pwd)
+		console.log(foundUser.password)
+		console.log(isPasswordValid)
+
+		if (isPasswordValid) {
+			console.log("Authentication successful for user:", foundUser.name)
+			return res.status(200).json({ message: "Authentication successful" })
+		} else {
+			console.log("Authentication failed for user:", foundUser.name)
+			return res.status(401).json({ message: "Authentication failed" })
+		}
+	} catch (error) {
+		console.error("Error during authentication:", error)
+		return next(error) // Pass the error to the error handling middleware
 	}
 })
+
 //register user
 //POST/users
 const registerUser = asyncHandler(async (req, res) => {

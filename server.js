@@ -1,7 +1,8 @@
-dotenv.config()
-connectDB() //connect to the database
-import connectDB from "./config/db.js"
 import dotenv from "dotenv"
+dotenv.config()
+
+import connectDB from "./config/db.js"
+
 import User from "./models/userModel.js"
 import express from "express"
 import cors from "cors"
@@ -12,12 +13,13 @@ import Note from "./models/noteModels.js"
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js"
 import noteRoutes from "./routes/noteRoutes.js"
 import userRoutes from "./routes/userRoutes.js"
-dotenv.config()
+import { authUser } from "./controllers/userController.js"
+
 connectDB() //connect to the database
 const app = express()
 //body parser middleware
 app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 
 const corsOptions = {
 	origin: "http://localhost:3000",
@@ -102,16 +104,10 @@ app.post("/register", async (req, res) => {
 		res.status(500).json({ message: "Internal server error!" })
 	}
 })
-
-app.post("/auth", (req, res) => {
-	const { user, pwd } = req.body
-	if (user === "user" && pwd === "pwd") {
-		res.status(200).json({ message: "Authentication successful" })
-	} else {
-		res.status(403).json({ message: "Authentication failed" })
-	}
-})
+app.post("/auth", authUser)
 app.use("/notes", noteRoutes)
+app.post("/notes", noteRoutes)
+app.delete("/notes", noteRoutes)
 app.use("/users", userRoutes)
 app.use(notFound)
 app.use(errorHandler)
