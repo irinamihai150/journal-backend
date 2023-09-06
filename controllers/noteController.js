@@ -1,5 +1,6 @@
 import asyncHandler from "../middleware/asyncHandler.js"
 import Note from "../models/noteModels.js"
+import mongoose from "mongoose"
 
 // Desc: Fetch all notes
 // Route: /get/notes
@@ -24,7 +25,7 @@ const getNotesById = asyncHandler(async (req, res) => {
 			res.status(400).json({ message: "Invalid ObjectId format for noteId" })
 			return
 		}
-		const note = await Note.findOne({ id: req.params.id, userId: userId })
+		const note = await Note.findOne({ _id: req.params.id, userId: userId })
 		if (note) {
 			return res.json(note)
 		} else {
@@ -51,17 +52,31 @@ const createNote = asyncHandler(async (req, res) => {
 	}
 })
 
+
 const deleteNote = asyncHandler(async (req, res) => {
 	try {
-		const noteId = req.params.id
-		const note = await Note.findById(noteId)
-		if (!note) {
-			res.status(404)
-			throw new Error("Note Not Found")
+		const userId = req.params.userId
+		const noteId = req.params.noteId
+		console.log("Deleting note with ID:", noteId)
+
+		if (!mongoose.Types.ObjectId.isValid(noteId)) {
+			console.error("Invalid ObjectId format for noteId:", noteId)
+			res.status(400).json({ message: "Invalid ObjectId format for noteId" })
+			return
 		}
-		await note.remove()
-		res.json({ message: "Note deleted successfully" })
+
+		const result = await Note.deleteOne({ _id: noteId, user: userId })
+		console.log("Delete result:", result)
+
+		if (result.deletedCount === 1) {
+			console.log("Note deleted successfully.")
+			res.json({ message: "Note deleted successfully" })
+		} else {
+			console.error("Note not found for ID:", noteId)
+			res.status(404).json({ message: "Note not found" })
+		}
 	} catch (error) {
+		console.error("Error while deleting note:", error)
 		res.status(500).json({ message: error.message })
 	}
 })

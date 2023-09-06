@@ -105,12 +105,13 @@ app.post("/register", async (req, res) => {
 	}
 })
 app.post("/auth", authUser)
-app.use("/notes", noteRoutes)
-app.post("/notes", noteRoutes)
-app.delete("/notes", noteRoutes)
+app.use(noteRoutes)
+// app.post("/notes", noteRoutes)
+// app.delete("/notes", noteRoutes)
 app.use("/users", userRoutes)
 app.use(notFound)
 app.use(errorHandler)
+
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}`)
 })
