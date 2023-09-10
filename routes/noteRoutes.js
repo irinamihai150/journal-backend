@@ -10,7 +10,7 @@ import {
 
 const router = express.Router()
 // Route to fetch all notes
-router.get("/notes", getNotes)
+router.get("/notes/user/:userId", getNotes)
 router.post("/notes", createNote)
 router.delete("/notes/user/:userId/:noteId", deleteNote)
 // Route to fetch a note by ID

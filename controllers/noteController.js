@@ -2,16 +2,17 @@ import asyncHandler from "../middleware/asyncHandler.js"
 import Note from "../models/noteModels.js"
 import mongoose from "mongoose"
 
-// Desc: Fetch all notes
-// Route: /get/notes
 const getNotes = asyncHandler(async (req, res) => {
-	try {
-		const userId = req.params.userId
-		const notes = await Note.find({ userId: userId })
-		res.json(notes)
-	} catch (error) {
-		res.status(500).json({ message: error.message })
-	}
+	
+	  try {
+			const userId = req.params.userId
+			console.log("Received userId:", userId)
+			const notes = await Note.find({ user:userId })
+			console.log("Notes found:", notes) 
+			res.json(notes)
+		} catch (error) {
+			res.status(500).json({ message: error.message })
+		}
 })
 
 // Desc: Fetch notes by id
@@ -51,7 +52,6 @@ const createNote = asyncHandler(async (req, res) => {
 		res.status(500).json({ message: error.message })
 	}
 })
-
 
 const deleteNote = asyncHandler(async (req, res) => {
 	try {
